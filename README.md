@@ -1,0 +1,2 @@
+## Functional Programming in Python
+it’s a programming technique that avoids side effects in your programs by performing computation, mainly through the evaluation of functions, and it’ll rely heavily on immutable data structures as well. In other words, is a way to reduce the amount of bugs in a program by applying a style of programming, where we mainly use immutable data structure by doing all of our computation using the evaluation of mathematical functions.
