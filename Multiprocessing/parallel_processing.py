@@ -2,6 +2,8 @@ import collections
 import multiprocessing
 import time
 from pprint import pprint
+import os
+import concurrent.futures
 
 
 Scientist = collections.namedtuple('Scientist', [
@@ -13,10 +15,10 @@ Scientist = collections.namedtuple('Scientist', [
 
 
 def transform(x):
-    print(f'Processing record {x.name}')
+    print(f'Process {os.getpid()} working record {x.name}')
     time.sleep(1)
     result = {'name': x.name, 'age': 2017 - x.born}
-    print(f'Done processing {x.name}')
+    print(f'Process {os.getpid()} done processing {x.name}')
     return result
 
 
@@ -44,14 +46,41 @@ if __name__ == '__main__':
     print(
         f'\nTime taken by normal processing: {t_end - t_start:.2f} seconds\n')
 
-#! With multiprocessing, we can create a pool of workers and have them work in parallel.
-#! optimazing the code to use multiple cores and using less time.
+    #! With multiprocessing, we can create a pool of workers and have them work in parallel.
+    #! optimazing the code to use multiple cores and using less time.
     print('Starting parallel processing...\n')
     start = time.time()
-    with multiprocessing.Pool() as pool:
+    with multiprocessing.Pool(processes=len(scientists)) as pool:
         result = pool.map(transform, scientists)
     end = time.time()
 
     pprint(result)
     print(
         f'\nTime to complete with multiprocessing: {end - start:.2f} seconds\n')
+
+    #! With concurrent.futures we can use threads and processes to work in parallel.
+    #! This is a more advanced technique and is less optimized than multiprocessing.
+    #! But it is more flexible and easier to use.
+    print('Starting concurrent processing...\n')
+    start = time.time()
+    with concurrent.futures.ProcessPoolExecutor(max_workers=len(scientists)) as executor:
+        result = executor.map(transform, scientists)
+    end = time.time()
+
+    pprint(tuple(result))
+    print(
+        f'\nTime to complete with concurrent processing: {end - start:.2f} seconds\n')
+
+    #! Other way to work in parallel. is by using threads
+    #! with concurrent.futures.ThreadPoolExecutor we can use threads instead of processes.
+    print('Starting threading pool...\n')
+    start = time.time()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(scientists)) as executor:
+        result = executor.map(transform, scientists)
+    end = time.time()
+    pprint(tuple(result))
+    print(
+        f'\nTime to complete with concurrent threading: {end - start:.2f} seconds\n')
+
+    #! The ThreadPoolExecutor is more flexible than ProcessPoolExecutor.
+    #! but it is less efficient than ProcessPoolExecutor.
