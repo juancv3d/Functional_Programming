@@ -28,3 +28,20 @@ print("Total age:", total_age)
 # we can also do the same by using the sum function.
 total_age_sum = sum(x['age'] for x in names_and_ages)
 print("Total age sum:", total_age_sum)
+# there are more interesting uses of the reduce function
+# for example, we can calculate the total number of scientists by summing the number of items in each namedtuple.
+scientists_count = reduce(lambda acc, val: acc + 1, scientists, 0)
+# or we can group the scientists by field and calculate the number of scientists in each field.
+
+
+def reducer(acc, val):
+    acc[val.field].append(val.name)
+    return acc
+
+
+scientists_by_field = reduce(
+    reducer,
+    scientists,
+    {'math': [], 'physics': [], 'chemistry': [], 'astronomy': [], 'other': []}
+)
+pprint(scientists_by_field)
